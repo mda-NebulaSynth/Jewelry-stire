@@ -135,9 +135,8 @@ export default function Home() {
                                     lineHeight: 1.1,
                                 }}
                             >
-                                Timeless Elegance in
-                                <br />
-                                <span className="gradient-text-gold">Gold & Silver</span>
+                                Discover <br />
+                                <span className="gradient-text-gold">NebulaJewel</span>
                             </h1>
 
                             <p
@@ -344,26 +343,26 @@ export default function Home() {
                                 fontSize: 'var(--font-size-lg)',
                                 color: 'var(--color-text-secondary)',
                                 marginBottom: 'var(--spacing-xl)',
+                                maxWidth: '600px',
+                                margin: '0 auto var(--spacing-xl)',
                             }}
                         >
-                            Get exclusive offers and updates on new collections
+                            Stay updated with our latest collections, exclusive offers, and jewelry care tips.
                         </p>
 
                         <div
                             style={{
                                 display: 'flex',
                                 gap: '1rem',
-                                maxWidth: '600px',
+                                maxWidth: '500px',
                                 margin: '0 auto',
-                                flexWrap: 'wrap',
-                                justifyContent: 'center',
                             }}
                         >
                             <input
                                 type="email"
                                 placeholder="Enter your email"
                                 className="input"
-                                style={{ flex: 1, minWidth: '250px' }}
+                                style={{ flex: 1 }}
                             />
                             <button className="btn btn-primary">Subscribe</button>
                         </div>

@@ -168,11 +168,10 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> {
-    data: T[];
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
+    results: T[];
+    count: number;
+    next?: string | null;
+    previous?: string | null;
 }
 
 // Review Types

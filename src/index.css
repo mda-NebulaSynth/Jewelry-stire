@@ -9,30 +9,30 @@
   --color-secondary: #C0C0C0;
   --color-secondary-dark: #A8A8A8;
   --color-secondary-light: #E8E8E8;
-  
+
   --color-accent: #8B4513;
   --color-accent-light: #CD853F;
-  
+
   --color-bg-primary: #0A0A0A;
   --color-bg-secondary: #1A1A1A;
   --color-bg-tertiary: #2A2A2A;
   --color-bg-card: rgba(26, 26, 26, 0.8);
-  
+
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B8B8B8;
   --color-text-tertiary: #888888;
-  
+
   --color-success: #10B981;
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
-  
+
   /* Gradients */
   --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F4E4B8 50%, #D4AF37 100%);
   --gradient-silver: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 50%, #C0C0C0 100%);
   --gradient-dark: linear-gradient(180deg, #0A0A0A 0%, #1A1A1A 100%);
   --gradient-overlay: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(10, 10, 10, 0.9) 100%);
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -41,11 +41,11 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
-  
+
   /* Typography */
   --font-display: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
-  
+
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -55,14 +55,14 @@
   --font-size-3xl: 2rem;
   --font-size-4xl: 2.5rem;
   --font-size-5xl: 3rem;
-  
+
   /* Borders & Radius */
   --border-radius-sm: 0.25rem;
   --border-radius-md: 0.5rem;
   --border-radius-lg: 1rem;
   --border-radius-xl: 1.5rem;
   --border-radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -71,12 +71,12 @@
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   --shadow-gold: 0 0 30px rgba(212, 175, 55, 0.3);
   --shadow-silver: 0 0 30px rgba(192, 192, 192, 0.3);
-  
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 300ms ease-in-out;
   --transition-slow: 500ms ease-in-out;
-  
+
   /* Z-index */
   --z-dropdown: 1000;
   --z-sticky: 1020;
@@ -111,7 +111,12 @@ body {
 }
 
 /* ===== TYPOGRAPHY ===== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.2;
@@ -312,6 +317,13 @@ a:hover {
   transition: transform var(--transition-slow);
 }
 
+@media (max-width: 768px) {
+  .card-image {
+    height: auto;
+    aspect-ratio: 1/1;
+  }
+}
+
 .card:hover .card-image {
   transform: scale(1.1);
 }
@@ -397,9 +409,12 @@ a:hover {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -407,12 +422,10 @@ a:hover {
 
 /* ===== LOADING ANIMATIONS ===== */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-tertiary) 25%,
-    var(--color-bg-secondary) 50%,
-    var(--color-bg-tertiary) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-tertiary) 25%,
+      var(--color-bg-secondary) 50%,
+      var(--color-bg-tertiary) 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }
@@ -421,6 +434,7 @@ a:hover {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -474,7 +488,7 @@ a:hover {
     --font-size-4xl: 2rem;
     --font-size-3xl: 1.75rem;
   }
-  
+
   .container {
     padding: 0 var(--spacing-lg);
   }
@@ -486,11 +500,11 @@ a:hover {
     --font-size-4xl: 1.75rem;
     --font-size-3xl: 1.5rem;
   }
-  
+
   .container {
     padding: 0 var(--spacing-md);
   }
-  
+
   .btn {
     padding: var(--spacing-sm) var(--spacing-lg);
     font-size: var(--font-size-sm);
@@ -502,6 +516,7 @@ a:hover {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -512,6 +527,7 @@ a:hover {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -523,6 +539,7 @@ a:hover {
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -534,6 +551,7 @@ a:hover {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

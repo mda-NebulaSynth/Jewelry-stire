@@ -238,11 +238,53 @@ class ReviewViewSet(viewsets.ModelViewSet):
         product.save()
 
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user'] = UserSerializer(self.user).data
+        data['token'] = data['access'] # For frontend compatibility
+        return data
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        # Handle potential immutability of request.data
+        if hasattr(data, 'copy'):
+            data = data.copy()
+            
+        if 'email' in data and 'username' not in data:
+            email = data.get('email')
+            try:
+                user = User.objects.get(email=email)
+                data['username'] = user.username
+            except (User.DoesNotExist, User.MultipleObjectsReturned):
+                pass
+        
+        serializer = self.get_serializer(data=data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
 class UserViewSet(viewsets.ModelViewSet):
     """User viewset"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action == 'register':
+            return [AllowAny()]
+        return super().get_permissions()
     
     @action(detail=False, methods=['get'])
     def profile(self, request):
@@ -256,10 +298,14 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(
-                UserSerializer(user).data,
-                status=status.HTTP_201_CREATED
-            )
+            # Create token for immediate login
+            refresh = CustomTokenObtainPairSerializer.get_token(user)
+            data = {
+                'user': UserSerializer(user).data,
+                'token': str(refresh.access_token),
+                'refresh': str(refresh)
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

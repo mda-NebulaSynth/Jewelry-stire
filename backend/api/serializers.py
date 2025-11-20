@@ -38,9 +38,19 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class ProductImageSerializer(serializers.ModelSerializer):
     """Product image serializer"""
+    url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'alt_text', 'order']
+        fields = ['id', 'url', 'alt_text', 'order']
+        
+    def get_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return obj.image_url
 
 
 class OfferSerializer(serializers.ModelSerializer):
@@ -77,6 +87,29 @@ class ProductSerializer(serializers.ModelSerializer):
             return OfferSerializer(active_offers).data
         return None
 
+    def create(self, validated_data):
+        images = self.initial_data.get('images', [])
+        product = super().create(validated_data)
+        
+        if isinstance(images, list):
+            for i, url in enumerate(images):
+                if isinstance(url, str) and url.startswith('http'):
+                    ProductImage.objects.create(product=product, image_url=url, order=i)
+            
+        return product
+
+    def update(self, instance, validated_data):
+        images = self.initial_data.get('images')
+        product = super().update(instance, validated_data)
+        
+        if images is not None and isinstance(images, list):
+            instance.images.all().delete()
+            for i, url in enumerate(images):
+                if isinstance(url, str) and url.startswith('http'):
+                    ProductImage.objects.create(product=product, image_url=url, order=i)
+                
+        return product
+
 
 class ProductListSerializer(serializers.ModelSerializer):
     """Lightweight product serializer for lists"""
@@ -96,9 +129,13 @@ class ProductListSerializer(serializers.ModelSerializer):
         """Get first image URL"""
         first_image = obj.images.first()
         if first_image:
-            request = self.context.get('request')
-            if request:
-                return [request.build_absolute_uri(first_image.image.url)]
+            if first_image.image:
+                request = self.context.get('request')
+                if request:
+                    return [request.build_absolute_uri(first_image.image.url)]
+                return [first_image.image.url]
+            elif first_image.image_url:
+                return [first_image.image_url]
         return []
     
     def get_offer(self, obj):

@@ -1,15 +1,64 @@
-import { motion } from 'framer-motion';
-import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiLogOut, FiGrid, FiX } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import CardNav from './CardNav';
 import { useStore } from '../store';
+import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
 
 export default function Header() {
-    const { getCartItemCount, toggleCart, user, wishlist } = useStore();
+    const { getCartItemCount, toggleCart, wishlist } = useStore();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
     const cartItemCount = getCartItemCount();
+
+    const handleLogout = () => {
+        logout();
+        setActiveMenu(null);
+        navigate('/');
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+            setActiveMenu(null);
+        }
+    };
+
+    const navGroups = {
+        shop: [
+            { id: 'shop', label: 'Shop All', path: '/products', color: '#4ECDC4', image: 'https://images.unsplash.com/photo-1531995811006-35cb42e1a022?q=80&w=1000&auto=format&fit=crop' },
+            { id: 'collections', label: 'Collections', path: '/collections', color: '#45B7D1', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1000&auto=format&fit=crop' },
+            { id: 'offers', label: 'Offers', path: '/offers', color: '#96CEB4', image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1000&auto=format&fit=crop' },
+        ],
+        explore: [
+            { id: 'home', label: 'Home', path: '/', color: '#FF6B6B', image: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=1000&auto=format&fit=crop' },
+            { id: 'about', label: 'About', path: '/about', color: '#FFEEAD', image: 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=1000&auto=format&fit=crop' },
+        ],
+        account: [
+            ...(user ? [
+                { id: 'dashboard', label: 'Dashboard', path: '/dashboard', color: '#A8E6CF' },
+                { id: 'logout', label: 'Logout', action: handleLogout, color: '#FF8B94' }
+            ] : [
+                { id: 'login', label: 'Login', path: '/login', color: '#FF8B94' },
+                { id: 'register', label: 'Register', path: '/login', color: '#FF8B94' }
+            ]),
+            ...(user?.role === 'admin' ? [{ id: 'admin', label: 'Admin', path: '/admin/products', color: '#D4AF37' }] : []),
+        ]
+    };
+
+    const mobileItems = [
+        ...navGroups.explore,
+        ...navGroups.shop,
+        ...navGroups.account
+    ];
+
+    const currentItems = activeMenu === 'mobile' ? mobileItems : (activeMenu ? navGroups[activeMenu as keyof typeof navGroups] : []);
 
     return (
         <motion.header
@@ -67,7 +116,7 @@ export default function Header() {
                                         margin: 0,
                                     }}
                                 >
-                                    LuxeJewels
+                                    NebulaJewel
                                 </h2>
                                 <p
                                     style={{
@@ -83,7 +132,7 @@ export default function Header() {
                         </motion.div>
                     </Link>
 
-                    {/* Navigation */}
+                    {/* Desktop Navigation Groups */}
                     <nav
                         style={{
                             display: 'flex',
@@ -92,28 +141,36 @@ export default function Header() {
                         }}
                         className="desktop-nav"
                     >
-                        <Link to="/" className="nav-link">
-                            Home
-                        </Link>
-                        <Link to="/products" className="nav-link">
+                        <button
+                            className={`nav-link ${activeMenu === 'explore' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu(activeMenu === 'explore' ? null : 'explore')}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                            Explore
+                        </button>
+                        <button
+                            className={`nav-link ${activeMenu === 'shop' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu(activeMenu === 'shop' ? null : 'shop')}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
                             Shop
-                        </Link>
-                        <Link to="/collections" className="nav-link">
-                            Collections
-                        </Link>
-                        <Link to="/offers" className="nav-link">
-                            Offers
-                        </Link>
-                        <Link to="/about" className="nav-link">
-                            About
-                        </Link>
+                        </button>
+                        <button
+                            className={`nav-link ${activeMenu === 'account' ? 'active' : ''}`}
+                            onClick={() => setActiveMenu(activeMenu === 'account' ? null : 'account')}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                            Account
+                        </button>
                     </nav>
 
-                    {/* Search Bar */}
-                    <motion.div
+                    {/* Desktop Search Bar */}
+                    <motion.form
+                        onSubmit={handleSearch}
+                        className="desktop-search"
                         style={{
                             flex: 1,
-                            maxWidth: '500px',
+                            maxWidth: '400px',
                             position: 'relative',
                         }}
                         animate={{
@@ -131,7 +188,7 @@ export default function Header() {
                         />
                         <input
                             type="text"
-                            placeholder="Search for jewelry..."
+                            placeholder="Search..."
                             className="input"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -139,9 +196,10 @@ export default function Header() {
                             onBlur={() => setIsSearchFocused(false)}
                             style={{
                                 paddingLeft: '3rem',
+                                borderRadius: 'var(--border-radius-full)',
                             }}
                         />
-                    </motion.div>
+                    </motion.form>
 
                     {/* Action Buttons */}
                     <div
@@ -161,23 +219,7 @@ export default function Header() {
                             >
                                 <FiHeart />
                                 {wishlist.length > 0 && (
-                                    <span
-                                        style={{
-                                            position: 'absolute',
-                                            top: '-4px',
-                                            right: '-4px',
-                                            background: 'var(--color-error)',
-                                            color: 'white',
-                                            borderRadius: '50%',
-                                            width: '20px',
-                                            height: '20px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
+                                    <span className="badge-count">
                                         {wishlist.length}
                                     </span>
                                 )}
@@ -194,50 +236,31 @@ export default function Header() {
                         >
                             <FiShoppingCart />
                             {cartItemCount > 0 && (
-                                <span
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-4px',
-                                        right: '-4px',
-                                        background: 'var(--gradient-gold)',
-                                        color: 'var(--color-bg-primary)',
-                                        borderRadius: '50%',
-                                        width: '20px',
-                                        height: '20px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
+                                <span className="badge-count" style={{ background: 'var(--gradient-gold)', color: 'var(--color-bg-primary)' }}>
                                     {cartItemCount}
                                 </span>
                             )}
                         </motion.button>
 
-                        {/* User Account */}
-                        <Link to={user ? '/profile' : '/login'}>
-                            <motion.button
-                                className="btn-icon"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <FiUser />
-                            </motion.button>
-                        </Link>
-
-                        {/* Mobile Menu */}
+                        {/* Mobile Menu Button */}
                         <motion.button
-                            className="btn-icon mobile-menu"
+                            className="btn-icon mobile-menu-btn"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
+                            onClick={() => setActiveMenu(activeMenu === 'mobile' ? null : 'mobile')}
                         >
-                            <FiMenu />
+                            {activeMenu === 'mobile' ? <FiX /> : <FiMenu />}
                         </motion.button>
                     </div>
                 </div>
             </div>
+
+            {/* Card Nav Overlay */}
+            <CardNav
+                items={currentItems || []}
+                isOpen={!!activeMenu}
+                onClose={() => setActiveMenu(null)}
+            />
 
             <style>{`
         .nav-link {
@@ -245,45 +268,57 @@ export default function Header() {
           font-weight: 500;
           font-size: var(--font-size-base);
           transition: color var(--transition-fast);
-          position: relative;
+          text-decoration: none;
         }
 
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: var(--gradient-gold);
-          transition: width var(--transition-base);
-        }
-
-        .nav-link:hover {
+        .nav-link:hover, .nav-link.active {
           color: var(--color-primary);
         }
 
-        .nav-link:hover::after {
-          width: 100%;
+        .nav-link-mobile {
+          color: var(--color-text-primary);
+          font-size: 1.1rem;
+          font-weight: 500;
+          padding: 0.5rem 0;
+          text-decoration: none;
+          transition: color var(--transition-fast);
         }
 
-        .mobile-menu {
-          display: none;
+        .nav-link-mobile:hover {
+          color: var(--color-primary);
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--color-error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
 
         @media (max-width: 1024px) {
           .desktop-nav {
-            display: none;
+            display: none !important;
           }
-
-          .mobile-menu {
-            display: flex;
+          .desktop-search {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: flex !important;
           }
         }
 
-        @media (max-width: 768px) {
-          .input {
-            display: none;
+        @media (min-width: 1025px) {
+          .mobile-menu-btn {
+            display: none !important;
           }
         }
       `}</style>

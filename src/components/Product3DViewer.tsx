@@ -54,7 +54,7 @@ export default function Product3DViewer({
     autoRotate = true,
 }: Product3DViewerProps) {
     return (
-        <div style={{ width: '100%', height: '500px', borderRadius: '1rem', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: 'clamp(300px, 50vh, 500px)', borderRadius: '1rem', overflow: 'hidden' }}>
             <Canvas>
                 <PerspectiveCamera makeDefault position={[0, 0, 5]} />
 
