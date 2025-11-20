@@ -2,7 +2,14 @@
 # exit on error
 set -o errexit
 
-cd backend
+# Install dependencies
 pip install -r requirements.txt
-python manage.py collectstatic --no-input
+
+# Run migrations
 python manage.py migrate
+
+# Initialize database with admin user
+python manage.py initdb
+
+# Collect static files
+python manage.py collectstatic --no-input

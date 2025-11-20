@@ -32,8 +32,21 @@ CORS_ALLOWED_ORIGINS=https://jewelry-stire.vercel.app,https://jewelry-stire.verc
 Update your Build Command in Render:
 
 ```bash
-pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --no-input
+pip install -r requirements.txt && python manage.py migrate && python manage.py initdb && python manage.py collectstatic --no-input
 ```
+
+This will:
+1. Install dependencies
+2. Run database migrations
+3. Create default admin user (username: `admin`, password: `admin123`)
+4. Collect static files
+
+**Default Admin Credentials:**
+- Username: `admin`
+- Email: `admin@nebulasynth.com`
+- Password: `admin123`
+
+⚠️ **Important**: Change the admin password after first login!
 
 ## Deploy Steps
 
