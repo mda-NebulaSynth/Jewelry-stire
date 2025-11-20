@@ -253,17 +253,19 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        data = request.data
-        # Handle potential immutability of request.data
-        if hasattr(data, 'copy'):
-            data = data.copy()
+        # Create a mutable copy of the request data
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
             
         if 'email' in data and 'username' not in data:
             email = data.get('email')
             try:
                 user = User.objects.get(email=email)
                 data['username'] = user.username
-            except (User.DoesNotExist, User.MultipleObjectsReturned):
+            except User.DoesNotExist:
+                # Let the serializer handle the error
+                pass
+            except User.MultipleObjectsReturned:
+                # Multiple users with same email - let serializer handle it
                 pass
         
         serializer = self.get_serializer(data=data)
