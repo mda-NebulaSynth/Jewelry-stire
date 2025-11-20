@@ -73,23 +73,14 @@ export default function Header() {
             }}
         >
             <div className="container">
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '2rem',
-                    }}
-                >
+                {/* Replaced inline style with class 'header-inner' for responsiveness */}
+                <div className="header-inner">
+                    
                     {/* Logo */}
                     <Link to="/" style={{ textDecoration: 'none' }}>
                         <motion.div
                             whileHover={{ scale: 1.05 }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                            }}
+                            className="logo-container"
                         >
                             <div
                                 style={{
@@ -103,15 +94,15 @@ export default function Header() {
                                     fontSize: '1.5rem',
                                     fontWeight: 'bold',
                                     color: 'var(--color-bg-primary)',
+                                    flexShrink: 0
                                 }}
                             >
                                 ✦
                             </div>
-                            <div>
+                            <div className="logo-text-wrapper">
                                 <h2
-                                    className="gradient-text-gold"
+                                    className="gradient-text-gold logo-title"
                                     style={{
-                                        fontSize: 'var(--font-size-2xl)',
                                         fontFamily: 'var(--font-display)',
                                         margin: 0,
                                     }}
@@ -133,32 +124,22 @@ export default function Header() {
                     </Link>
 
                     {/* Desktop Navigation Groups */}
-                    <nav
-                        style={{
-                            display: 'flex',
-                            gap: '2rem',
-                            alignItems: 'center',
-                        }}
-                        className="desktop-nav"
-                    >
+                    <nav className="desktop-nav">
                         <button
                             className={`nav-link ${activeMenu === 'explore' ? 'active' : ''}`}
                             onClick={() => setActiveMenu(activeMenu === 'explore' ? null : 'explore')}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                         >
                             Explore
                         </button>
                         <button
                             className={`nav-link ${activeMenu === 'shop' ? 'active' : ''}`}
                             onClick={() => setActiveMenu(activeMenu === 'shop' ? null : 'shop')}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                         >
                             Shop
                         </button>
                         <button
                             className={`nav-link ${activeMenu === 'account' ? 'active' : ''}`}
                             onClick={() => setActiveMenu(activeMenu === 'account' ? null : 'account')}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                         >
                             Account
                         </button>
@@ -197,18 +178,14 @@ export default function Header() {
                             style={{
                                 paddingLeft: '3rem',
                                 borderRadius: 'var(--border-radius-full)',
+                                width: '100%'
                             }}
                         />
                     </motion.form>
 
                     {/* Action Buttons */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            gap: '1rem',
-                            alignItems: 'center',
-                        }}
-                    >
+                    {/* Replaced inline style with class 'action-buttons' for responsiveness */}
+                    <div className="action-buttons">
                         {/* Wishlist */}
                         <Link to="/wishlist">
                             <motion.button
@@ -263,7 +240,42 @@ export default function Header() {
             />
 
             <style>{`
+        /* Container Layouts */
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-title {
+            font-size: var(--font-size-2xl);
+        }
+
+        .desktop-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Nav Links */
         .nav-link {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
           color: var(--color-text-secondary);
           font-weight: 500;
           font-size: var(--font-size-base);
@@ -272,19 +284,6 @@ export default function Header() {
         }
 
         .nav-link:hover, .nav-link.active {
-          color: var(--color-primary);
-        }
-
-        .nav-link-mobile {
-          color: var(--color-text-primary);
-          font-size: 1.1rem;
-          font-weight: 500;
-          padding: 0.5rem 0;
-          text-decoration: none;
-          transition: color var(--transition-fast);
-        }
-
-        .nav-link-mobile:hover {
           color: var(--color-primary);
         }
 
@@ -304,15 +303,23 @@ export default function Header() {
             font-weight: bold;
         }
 
+        /* RESPONSIVE STYLES */
         @media (max-width: 1024px) {
           .desktop-nav {
             display: none !important;
           }
+          
           .desktop-search {
             display: none !important;
           }
+          
           .mobile-menu-btn {
             display: flex !important;
+          }
+
+          /* Reduce gaps on mobile/tablet */
+          .header-inner {
+             gap: 1rem;
           }
         }
 
@@ -320,6 +327,24 @@ export default function Header() {
           .mobile-menu-btn {
             display: none !important;
           }
+        }
+
+        @media (max-width: 480px) {
+           .header-inner {
+             gap: 0.5rem;
+           }
+           
+           .logo-title {
+             font-size: 1.2rem; /* Shrink logo text on very small screens */
+           }
+           
+           .logo-text-wrapper {
+             display: none; /* Optional: hide text on super small phones if needed, currently keeps it */
+           }
+
+           .action-buttons {
+             gap: 0.5rem;
+           }
         }
       `}</style>
         </motion.header>
